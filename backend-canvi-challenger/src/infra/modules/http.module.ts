@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { HttpGatewayService } from '@application/service/http-gateway.service';
 
 @Module({
   imports: [
@@ -28,6 +29,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       },
     }),
   ],
-  exports: [HttpModule],
+  providers: [
+    {
+      provide: 'HTTP_SERVICE',
+      useFactory: (config: ConfigService) => {
+        return new HttpGatewayService(config);
+      },
+      inject: [ConfigService],
+    },
+  ],
+  exports: [HttpModule, 'HTTP_SERVICE'],
 })
 export class HttpConfigModule {}

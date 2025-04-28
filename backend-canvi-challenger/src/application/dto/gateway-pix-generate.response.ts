@@ -6,6 +6,7 @@ export interface GatewayPixGenerateResponse {
 
 export interface GatewayPixData {
   id_invoice_pix: number;
+  id?: number;
   valor: string;
   vencimento: string;
   id_cobrador: string;

@@ -17,7 +17,11 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "prisma:generate": "npx prisma generate --schema=src/infra/database/prisma/schema.prisma",
+    "prisma:migrate": "npx prisma migrate dev --schema=src/infra/database/prisma/schema.prisma",
+    "prisma:migrate:deploy": "npx prisma migrate deploy --schema=src/infra/database/prisma/schema.prisma",
+    "prisma:migrate:reset": "npx prisma migrate reset --schema=src/infra/database/prisma/schema.prisma"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.0",
@@ -25,8 +29,10 @@
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "@prisma/client": "^6.6.0",
     "axios": "^1.9.0",
     "dotenv": "^16.5.0",
+    "prisma": "^6.6.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "zod": "^3.24.3"

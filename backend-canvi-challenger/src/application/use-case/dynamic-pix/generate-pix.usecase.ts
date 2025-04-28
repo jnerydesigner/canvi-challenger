@@ -1,63 +1,46 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-import { DynamicPixMapper } from '@model/mapper/dynamic-pix.mapper';
+import {
+  DynamicPixMapper,
+  RequestGatewayPixGenerate,
+} from '@model/mapper/dynamic-pix.mapper';
 import { GatewayPixGenerateResponse } from '@application/dto/gateway-pix-generate.response';
-import { DocumentTypeEnum } from '@application/enum/docuemtn-type.enum';
-import { AuthService } from '@application/service/auth.service';
-import { HttpService } from '@nestjs/axios';
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
-import { firstValueFrom } from 'rxjs';
-import { retry, timeout } from 'rxjs/operators';
-import { ApplicationPixGenerateResponse } from '@application/dto/application-pix-generate.rsponse';
+import { PixData } from '@application/dto/application-pix-generate.response';
+import { DynamicPixDbMapper } from '@model/mapper/dynamic-pix-db.mapper';
+import { DynamicPixInterface } from '@model/repository/dynamic-pix.repository';
+import { DocumentTypeEnum } from '@application/enum/document-type.enum';
+import {
+  ClientService,
+  InputCreateUser,
+} from '@application/service/client.service';
+import { IHttpService } from '@infra/http/http-service.interface';
+import { HttpMethodEnum } from '@application/enum/http-method.enum';
 
 @Injectable()
 export class GeneratePixUseCase {
   private logger: Logger;
-
   constructor(
-    private readonly authService: AuthService,
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService,
+    @Inject('DYNAMIC_PIX_REPOSITORY')
+    private readonly dynamicPixRepo: DynamicPixInterface,
+    private readonly clientService: ClientService,
+    @Inject('HTTP_SERVICE')
+    private readonly httpGatewayService: IHttpService,
   ) {
     this.logger = new Logger(GeneratePixUseCase.name);
   }
 
-  async execute(
-    input: InputGeneratePix,
-  ): Promise<ApplicationPixGenerateResponse> {
+  async execute(input: InputGeneratePix): Promise<PixData | Error> {
+    const client = await this.searchClient(input.client.email, input.client);
     try {
       if (!input.value || !input.client.documentNumber) {
         this.logger.error('Invalid input', { input });
         throw new Error('Invalid input: Missing required fields');
       }
-
-      this.logger.log('Starting authentication request');
-      const urlGateway = this.configService.get<string>('PIX_API_BASE_URL');
-      const clientId = this.configService.get<string>('CLIENT_ID');
-      const privateKey = this.configService.get<string>('PRIVATE_KEY');
-      if (!clientId || !privateKey) {
-        this.logger.error('Missing PIX_CLIENT_ID or PIX_PRIVATE_KEY');
-        throw new Error('Configuration error: Missing credentials');
-      }
-
-      const loginResp = await firstValueFrom(
-        this.httpService
-          .post(
-            `${urlGateway}/bt/token`,
-            { client_id: clientId, private_key: privateKey },
-            { withCredentials: true },
-          )
-          .pipe(timeout({ each: 20000 }), retry({ count: 3, delay: 1000 })),
-      );
-      this.logger.log('Authentication request completed');
-
-      const setCookie = loginResp.headers['set-cookie']?.[0];
-      if (!setCookie) {
-        this.logger.error('No cookie received', { headers: loginResp.headers });
-        throw new Error('No cookie received from authentication');
-      }
-      const authCookie = setCookie.split(';')[0];
 
       const responseMapper =
         DynamicPixMapper.toGeneratePixGatewayPayment(input);
@@ -65,34 +48,60 @@ export class GeneratePixUseCase {
         ...responseMapper,
         identificador_externo: randomUUID(),
         identificador_movimento: randomUUID(),
+        cliente: {
+          nome: client.name,
+          tipo_documento: client.documentType,
+          numero_documento: client.documentNumber,
+          'e-mail': client.email,
+        },
       };
 
       this.logger.log('Generated Pix payload', { payload });
 
       this.logger.log('Starting Pix generation request');
 
-      const { data: response } = await firstValueFrom(
-        this.httpService
-          .post<GatewayPixGenerateResponse>(`${urlGateway}/bt/pix`, payload, {
-            withCredentials: true,
-            headers: { Cookie: authCookie },
-          })
-          .pipe(
-            timeout({ each: 30000 }),
-            retry({
-              count: 3,
-              delay: 1000,
-            }),
-          ),
-      );
+      const resGateway = await this.httpGatewayService.fetch<
+        RequestGatewayPixGenerate,
+        GatewayPixGenerateResponse
+      >('bt/pix', HttpMethodEnum.POST, payload, true);
 
-      this.logger.log(response);
+      if (resGateway.code === 400) {
+        throw new BadRequestException('No response call function');
+      }
+
       this.logger.log('Pix generation request completed');
 
-      return DynamicPixMapper.toResponseApplication(response);
+      this.logger.log(resGateway);
+
+      const pixGenerateMapper =
+        DynamicPixMapper.toResponseApplication(resGateway);
+
+      const pixDbCreate = DynamicPixDbMapper.toPersistency(pixGenerateMapper);
+
+      const returnedCreatedDB = await this.dynamicPixRepo.save(
+        pixDbCreate,
+        client.id,
+      );
+
+      return DynamicPixDbMapper.toResponse(returnedCreatedDB);
     } catch (erro) {
-      throw new Error(`Failed to generate Pix: ${erro}`);
+      throw new BadRequestException(erro);
     }
+  }
+
+  async searchClient(email: string, inputClient: InputClient) {
+    let findClient = await this.clientService.findUser(email);
+    if (!findClient) {
+      const createUser: InputCreateUser = {
+        name: inputClient.name,
+        email: inputClient.email,
+        documentType: inputClient.documentType,
+        documentNumber: inputClient.documentNumber,
+      };
+      findClient = await this.clientService.createUser(createUser);
+    }
+
+    return findClient;
   }
 }
 

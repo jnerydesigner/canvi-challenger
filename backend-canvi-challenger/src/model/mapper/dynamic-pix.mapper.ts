@@ -1,4 +1,4 @@
-import { ApplicationPixGenerateResponse } from '@application/dto/application-pix-generate.rsponse';
+import { ApplicationPixGenerateResponse } from '@application/dto/application-pix-generate.response';
 import { GatewayPixGenerateResponse } from '@application/dto/gateway-pix-generate.response';
 import { InputGeneratePix } from '@application/use-case/dynamic-pix/generate-pix.usecase';
 
@@ -33,6 +33,7 @@ export class DynamicPixMapper {
       code: input.code,
       message: input.mensagem,
       data: {
+        id: d.id,
         pixInvoiceId: d.id_invoice_pix,
         amount: d.valor,
         dueDate: d.vencimento,
