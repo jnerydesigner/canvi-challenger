@@ -5,6 +5,7 @@ export interface ApplicationPixGenerateResponse {
 }
 
 export interface PixData {
+  id?: number;
   pixInvoiceId: number;
   amount: string;
   dueDate: string;

@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Client {
+  id             Int           @id @default(autoincrement()) @map("id")
+  name           String        @map("name")
+  documentType   String        @map("document_type")
+  documentNumber String        @map("document_number")
+  email          String        @map("email")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  pix            PixGenerate[]
+
+  @@index([email])
+  @@map("client")
+}
+
+model PixGenerate {
+  id            Int      @id @default(autoincrement()) @map("id")
+  pixInvoiceId  Int      @map("pix_invoice_id")
+  amount        String   @map("amount")
+  dueDate       DateTime @map("due_date")
+  collectorId   String   @map("collector_id")
+  collectorName String   @map("collector_name")
+  brCode        String   @map("br_code")
+  status        String   @map("status")
+  createdAt     DateTime @map("created_at")
+  qrCode        String   @map("qr_code") @db.LongText
+  transactionId String   @map("transaction_id")
+  Client        Client?  @relation(fields: [clientId], references: [id])
+  clientId      Int?
+
+  @@map("pix_generate")
+}
