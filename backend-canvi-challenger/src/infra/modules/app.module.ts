@@ -1,5 +1,4 @@
 import { WebhookModule } from './webhook.module';
-import { WebhookController } from './../../controller/webhook.controller';
 import { ClientModule } from './client.module';
 import { DatabaseModule } from './database.module';
 import { DynamicPixModule } from './dynamic-pix.module';
@@ -22,7 +21,7 @@ import { ConfigModule } from '@nestjs/config';
     WebhookModule,
     DynamicPixModule,
   ],
-  controllers: [WebhookController, AppController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
