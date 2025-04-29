@@ -20,7 +20,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:generate": "npx prisma generate --schema=src/infra/database/prisma/schema.prisma",
     "prisma:migrate": "npx prisma migrate dev --schema=src/infra/database/prisma/schema.prisma",
-    "prisma:migrate:deploy": "npx prisma migrate deploy --schema=src/infra/database/prisma/schema.prisma",
+    "prisma:generate:deploy": "npx prisma generate --schema=./prisma/schema.prisma",
+    "prisma:migrate:deploy": "npx prisma migrate deploy --schema=./prisma/schema.prisma",
     "prisma:migrate:reset": "npx prisma migrate reset --schema=src/infra/database/prisma/schema.prisma"
   },
   "dependencies": {

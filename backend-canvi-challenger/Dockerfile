@@ -5,22 +5,18 @@ RUN npm i -g @nestjs/cli
 
 WORKDIR /app
 
-# Copie os arquivos de configuração
+# Copie os arquivos de config e dependências
 COPY package.json yarn.lock tsconfig.build.json ./
-
 COPY src/infra/database/prisma /app/prisma
+COPY . .
 
-# Instale as dependências com o lockfile congelado
 RUN yarn install --frozen-lockfile
 
 RUN apt-get update -y && apt-get install -y openssl
 
-# Copie o restante do código da aplicação
-COPY . .
-
-# Compile a aplicação
+# Gera código do Prisma e builda a aplicação
+RUN yarn prisma:generate:deploy
 RUN yarn build
-
 
 # Segundo estágio: Runner
 FROM node:22-slim
@@ -28,14 +24,17 @@ FROM node:22-slim
 WORKDIR /app
 
 # Copie os arquivos necessários do build
+COPY --from=builder /app/package.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/package.json ./
 
-# Limpa cache do yarn e instala apenas dependências de produção
+RUN apt-get update -y && apt-get install -y openssl
+
+# Instale apenas dependências de produção
 RUN yarn cache clean && yarn install --production --frozen-lockfile
 
 EXPOSE 5551
 
-CMD ["node", "dist/src/main.js"]
+# Comando final: aplica migrate e inicia app
+CMD yarn prisma:migrate:deploy && node dist/src/main.js

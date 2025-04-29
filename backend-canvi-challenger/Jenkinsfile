@@ -1,0 +1,48 @@
+pipeline {
+  agent any
+
+  environment {
+    COMPOSE_PROJECT_NAME = "meu_projeto" // evita conflitos entre builds
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Build and Start Containers') {
+      steps {
+        script {
+          sh 'docker-compose down --remove-orphans'
+          sh 'docker-compose build'
+          sh 'docker-compose up -d'
+        }
+      }
+    }
+
+    stage('Run Commands Inside Container') {
+      steps {
+        script {
+          // substitua "app" pelo nome do seu serviço no docker-compose.yml
+          sh 'docker-compose exec -T app npm install'
+          sh 'docker-compose exec -T app npm test'
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      echo 'Finalizando containers...'
+      sh 'docker-compose down --remove-orphans'
+    }
+    failure {
+      echo 'Build falhou!'
+    }
+    success {
+      echo 'Pipeline executada com sucesso!'
+    }
+  }
+}

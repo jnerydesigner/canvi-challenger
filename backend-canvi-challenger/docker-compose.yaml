@@ -1,20 +1,21 @@
 version: '3.8'
 
 services:
-  # canvi-app:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   container_name: canvi-app
-  #   env_file:
-  #     - .env
-  #   ports:
-  #     - '${SERVER_PORT}:${SERVER_PORT}'
-  #   networks:
-  #     - canvi
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - pix_mysql
+  canvi-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: canvi-app
+    env_file:
+      - .env
+    ports:
+      - '${SERVER_PORT}:${SERVER_PORT}'
+    networks:
+      - canvi
+    restart: unless-stopped
+    depends_on:
+      pix_mysql:
+        condition: service_healthy
 
   pix_mysql:
     image: mysql:8.0
@@ -31,7 +32,7 @@ services:
       test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
       interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 5
     networks:
       - canvi
 
