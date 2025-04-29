@@ -1,3 +1,4 @@
+import { StaticPixModule } from './static-pix.module';
 import { WebhookModule } from './webhook.module';
 import { WebhookController } from './../../controller/webhook.controller';
 import { ClientModule } from './client.module';
@@ -21,6 +22,7 @@ import { ConfigModule } from '@nestjs/config';
     ClientModule,
     WebhookModule,
     DynamicPixModule,
+    StaticPixModule,
   ],
   controllers: [WebhookController, AppController],
   providers: [AppService],

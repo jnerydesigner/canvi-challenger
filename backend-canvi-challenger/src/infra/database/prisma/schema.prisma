@@ -70,3 +70,26 @@ model DetailsListQueryPixDynamic {
 
   @@map("details_list_query_dynamic_pix")
 }
+
+model PixStatusWebhook {
+  id Int @id @default(autoincrement())
+
+  statusId        Int     @map("status_id")
+  pixInvoiceId    Int     @map("invoice_pix_id")
+  status          String  @map("status")
+  date            String  @map("date")
+  transactionId   Int     @map("transaction_id")
+  settlementDate  String? @map("settlement_date")
+  payerId         String? @map("payer_id")
+  payerName       String? @map("payer_name")
+  accountNumber   String? @map("account_number")
+  agencyNumber    String? @map("agency_number")
+  bankCode        String? @map("bank_code")
+  movementId      String  @map("movement_identifier")
+  externalId      String  @map("external_identifier")
+  trackingCode    String? @map("tracking_code")
+  amount          String  @map("amount")
+  instructionText String  @map("instruction_text")
+
+  @@map("pix_status_webhook")
+}
