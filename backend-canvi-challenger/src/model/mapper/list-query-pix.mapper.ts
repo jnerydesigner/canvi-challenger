@@ -32,6 +32,4 @@ export class ListQueryPixMapper {
       allowRefundedRelease: listQuery.ativo_liberar_devolucao,
     };
   }
-
-  static toResponse();
 }
