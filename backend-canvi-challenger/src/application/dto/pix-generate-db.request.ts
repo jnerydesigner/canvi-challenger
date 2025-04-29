@@ -9,6 +9,7 @@ export interface PixGenerateRequestDb {
   status: string;
   createdAt: Date;
   qrCode: string;
-  transactionId: string;
+  txId: string;
   maturity: string;
+  externalIdentification: string;
 }

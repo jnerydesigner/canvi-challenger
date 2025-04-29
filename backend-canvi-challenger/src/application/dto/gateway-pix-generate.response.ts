@@ -16,4 +16,5 @@ export interface GatewayPixData {
   criacao: string;
   qrcode: string;
   tx_id: string;
+  identificador_externo: string;
 }

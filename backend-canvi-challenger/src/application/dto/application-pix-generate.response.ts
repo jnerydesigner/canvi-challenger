@@ -15,6 +15,7 @@ export interface PixData {
   status: string;
   createdAt: string;
   qrCode: string;
-  transactionId: string;
+  txId: string;
   maturity: string;
+  externalIdentification: string;
 }

@@ -42,8 +42,9 @@ export class DynamicPixMapper {
         status: d.status,
         createdAt: d.criacao,
         qrCode: d.qrcode,
-        transactionId: d.tx_id,
+        txId: d.tx_id,
         maturity: d.vencimento,
+        externalIdentification: d.identificador_externo,
       },
     };
   }
