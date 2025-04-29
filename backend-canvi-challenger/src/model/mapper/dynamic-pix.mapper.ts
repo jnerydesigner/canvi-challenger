@@ -8,7 +8,6 @@ export class DynamicPixMapper {
   ): RequestGatewayPixGenerate {
     return {
       valor: input.value,
-      vencimento: input.maturity,
       tipo_transacao: input.transactionType,
       texto_instrucao: input.textInstruction,
       identificador_externo: input.externalIdentifier,
@@ -52,7 +51,7 @@ export class DynamicPixMapper {
 
 export interface RequestGatewayPixGenerate {
   valor: number;
-  vencimento: string;
+  vencimento?: string;
   tipo_transacao: string;
   texto_instrucao: string;
   descricao: string;
