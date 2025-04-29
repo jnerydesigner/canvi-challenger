@@ -33,7 +33,7 @@ export class HttpGatewayService implements IHttpService {
     };
     const response = await axios.request<Res>(config);
 
-    this.logger.log(response.data);
+    this.logger.log(JSON.stringify(response.data));
 
     return response.data;
   }

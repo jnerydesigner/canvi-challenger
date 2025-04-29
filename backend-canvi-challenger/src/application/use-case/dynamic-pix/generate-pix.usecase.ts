@@ -43,12 +43,15 @@ export class GeneratePixUseCase {
         throw new Error('Invalid input: Missing required fields');
       }
 
+      const identificador_externo = randomUUID();
+      const identificador_movimento = randomUUID();
+
       const responseMapper =
         DynamicPixMapper.toGeneratePixGatewayPayment(input);
       const payload = {
         ...responseMapper,
-        identificador_externo: randomUUID(),
-        identificador_movimento: randomUUID(),
+        identificador_externo,
+        identificador_movimento,
         cliente: {
           nome: client.name,
           tipo_documento: client.documentType,
@@ -57,7 +60,7 @@ export class GeneratePixUseCase {
         },
       };
 
-      this.logger.log('Generated Pix payload', { payload });
+      this.logger.log('Generated Pix payload', JSON.stringify(payload));
 
       this.logger.log('Starting Pix generation request');
 
@@ -72,15 +75,20 @@ export class GeneratePixUseCase {
 
       this.logger.log('Pix generation request completed');
 
-      this.logger.log(resGateway);
+      this.logger.log(JSON.stringify(resGateway));
 
       const pixGenerateMapper =
         DynamicPixMapper.toResponseApplication(resGateway);
 
       const pixDbCreate = DynamicPixDbMapper.toPersistency(pixGenerateMapper);
 
+      const pixDbCreateToPersistent = {
+        ...pixDbCreate,
+        externalIdentification: identificador_externo,
+      };
+
       const returnedCreatedDB = await this.dynamicPixRepo.save(
-        pixDbCreate,
+        pixDbCreateToPersistent,
         client.id,
       );
 

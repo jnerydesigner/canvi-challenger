@@ -23,20 +23,50 @@ model Client {
 }
 
 model PixGenerate {
-  id            Int      @id @default(autoincrement()) @map("id")
-  pixInvoiceId  Int      @map("pix_invoice_id")
-  amount        String   @map("amount")
-  dueDate       DateTime @map("due_date")
-  collectorId   String   @map("collector_id")
-  collectorName String   @map("collector_name")
-  maturity      String   @map("maturity")
-  brCode        String   @map("br_code")
-  status        String   @map("status")
-  createdAt     DateTime @map("created_at")
-  qrCode        String   @map("qr_code") @db.LongText
-  transactionId String   @map("transaction_id")
-  Client        Client?  @relation(fields: [clientId], references: [id])
-  clientId      Int?
+  id                     Int      @id @default(autoincrement()) @map("id")
+  pixInvoiceId           Int      @map("pix_invoice_id")
+  amount                 String   @map("amount")
+  dueDate                DateTime @map("due_date")
+  collectorId            String   @map("collector_id")
+  collectorName          String   @map("collector_name")
+  maturity               String   @map("maturity")
+  brCode                 String   @map("br_code")
+  status                 String   @map("status")
+  createdAt              DateTime @map("created_at")
+  qrCode                 String   @map("qr_code") @db.LongText
+  txId                   String   @map("tx_id")
+  externalIdentification String   @map("external_identification")
+  Client                 Client?  @relation(fields: [clientId], references: [id])
+  clientId               Int?
 
   @@map("pix_generate")
+}
+
+model DetailsListQueryPixDynamic {
+  id                   Int      @id @default(autoincrement()) @map("id")
+  acronym              String   @map("acronym")
+  serviceName          String   @map("service_name")
+  transactionId        Int      @map("transaction_id")
+  grossAmount          String   @map("gross_amount")
+  feeAmount            String   @map("fee_amount")
+  creationDate         DateTime @map("creation_date")
+  effectiveDate        String   @map("effective_date")
+  settlementDate       String   @map("settlement_date")
+  statusName           String   @map("status_name")
+  payerId              String?  @map("payer_id")
+  payerName            String?  @map("payer_name")
+  trackingCode         String?  @map("tracking_code")
+  instructionText      String   @map("instruction_text")
+  externalIdentifier   String   @map("external_identifier")
+  balanceSum           String   @map("balance_sum")
+  companyId            Int      @map("company_id")
+  descriptionText      String   @map("description_text")
+  bankName             String?  @map("bank_name")
+  code                 String?  @map("code")
+  agency               String?  @map("agency")
+  receiverId           String?  @map("receiver_id")
+  receiverName         String?  @map("receiver_name")
+  allowRefundedRelease Int      @default(0) @map("allow_refunded_release")
+
+  @@map("details_list_query_dynamic_pix")
 }

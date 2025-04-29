@@ -7,15 +7,11 @@ import { TypePix } from "@/components/generate-pix";
 export const FetchPixList = async () => {
   const response = await Api.get<DynamicPixType[]>("/pix/list");
 
-  console.log(response.data);
-
   return response.data;
 };
 
 export const FetchPixDetails = async (invoiceId: number) => {
   const response = await Api.get<DynamicPixDetails>(`/pix/find/${invoiceId}`);
-
-  console.log(response.data);
 
   return response.data;
 };
@@ -40,8 +36,6 @@ export const CreatePix = async (
       email: data.email,
     },
   });
-
-  console.log(response.data);
 
   return response.data;
 };
