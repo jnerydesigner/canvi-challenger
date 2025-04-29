@@ -1,6 +1,21 @@
 version: '3.8'
 
 services:
+  # canvi-app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: canvi-app
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - '${SERVER_PORT}:${SERVER_PORT}'
+  #   networks:
+  #     - canvi
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - pix_mysql
+
   pix_mysql:
     image: mysql:8.0
     container_name: pix_mysql
@@ -17,6 +32,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    networks:
+      - canvi
 
 volumes:
   mysql_data:
+
+networks:
+  canvi:
+    driver: bridge

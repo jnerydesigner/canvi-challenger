@@ -1,3 +1,5 @@
+import { WebhookModule } from './webhook.module';
+import { WebhookController } from './../../controller/webhook.controller';
 import { ClientModule } from './client.module';
 import { DatabaseModule } from './database.module';
 import { GeneratePixController } from './../../controller/generate-pix.controller';
@@ -11,16 +13,17 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    DatabaseModule,
-    DynamicPixModule,
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
     }),
+    DatabaseModule,
     AuthModule,
     ClientModule,
+    WebhookModule,
+    DynamicPixModule,
   ],
-  controllers: [GeneratePixController, AppController],
+  controllers: [WebhookController, GeneratePixController, AppController],
   providers: [AppService],
 })
 export class AppModule {}

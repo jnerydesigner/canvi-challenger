@@ -36,6 +36,7 @@ export class GeneratePixUseCase {
 
   async execute(input: InputGeneratePix): Promise<PixData | Error> {
     const client = await this.searchClient(input.client.email, input.client);
+
     try {
       if (!input.value || !input.client.documentNumber) {
         this.logger.error('Invalid input', { input });

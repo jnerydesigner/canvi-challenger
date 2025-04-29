@@ -1,5 +1,5 @@
-export interface PixGenerateRequestDb {
-  id?: number;
+export interface PixDbTypes {
+  id: number;
   pixInvoiceId: number;
   amount: string;
   dueDate: Date;
@@ -10,5 +10,5 @@ export interface PixGenerateRequestDb {
   createdAt: Date;
   qrCode: string;
   transactionId: string;
-  maturity: string;
+  clientId: number | null;
 }

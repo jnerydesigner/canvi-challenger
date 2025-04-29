@@ -29,6 +29,7 @@ model PixGenerate {
   dueDate       DateTime @map("due_date")
   collectorId   String   @map("collector_id")
   collectorName String   @map("collector_name")
+  maturity      String   @map("maturity")
   brCode        String   @map("br_code")
   status        String   @map("status")
   createdAt     DateTime @map("created_at")

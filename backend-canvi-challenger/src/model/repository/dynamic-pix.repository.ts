@@ -3,4 +3,6 @@ import { PixGenerate } from '@prisma/client';
 
 export interface DynamicPixInterface {
   save(pix: PixGenerateRequestDb, clientId: number): Promise<PixGenerate>;
+  listAll(): Promise<PixGenerate[]>;
+  findOneTransaction(invoice: number): Promise<PixGenerate>;
 }
