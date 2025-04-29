@@ -25,6 +25,7 @@ export class DynamicPixDbMapper {
       dueDate: new Date(pix.dueDate),
       createdAt: new Date(pix.createdAt),
       qrCode: pix.qrCode,
+      maturity: pix.maturity,
     };
 
     return res;
@@ -43,6 +44,7 @@ export class DynamicPixDbMapper {
       dueDate: data.dueDate.toISOString(),
       createdAt: data.createdAt.toISOString(),
       qrCode: data.qrCode,
+      maturity: data.maturity,
     };
   }
 }

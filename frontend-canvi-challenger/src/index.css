@@ -3,6 +3,18 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --color-canvi-pink: #FF3EA5;
+  --color-canvi-purple: #512C94;
+  --color-canvi-purple-light: #604d83;
+}
+
+/* body{
+  background-color: #604d83;
+} */
+
+
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -114,6 +126,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }

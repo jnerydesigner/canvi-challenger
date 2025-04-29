@@ -16,4 +16,5 @@ export interface PixData {
   createdAt: string;
   qrCode: string;
   transactionId: string;
+  maturity: string;
 }
